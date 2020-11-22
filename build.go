@@ -133,6 +133,7 @@ func InitSegmentBase(mem []byte, memCRC uint32, chunkMode uint32,
 	dictLocs []uint64) (*SegmentBase, error) {
 	sb := &SegmentBase{
 		mem:               mem,
+		memSize:           len(mem),
 		memCRC:            memCRC,
 		chunkMode:         chunkMode,
 		fieldsMap:         fieldsMap,

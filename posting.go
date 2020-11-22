@@ -207,12 +207,12 @@ func (p *PostingsList) iterator(includeFreq, includeNorm, includeLocs bool,
 
 	// initialize freq chunk reader
 	if rv.includeFreqNorm {
-		rv.freqNormReader = newChunkedIntDecoder(p.sb.mem, p.freqOffset, rv.freqNormReader)
+		rv.freqNormReader = newChunkedIntDecoder(p.sb, p.freqOffset, rv.freqNormReader)
 	}
 
 	// initialize the loc chunk reader
 	if rv.includeLocs {
-		rv.locReader = newChunkedIntDecoder(p.sb.mem, p.locOffset, rv.locReader)
+		rv.locReader = newChunkedIntDecoder(p.sb, p.locOffset, rv.locReader)
 	}
 
 	rv.all = p.postings.Iterator()
@@ -256,17 +256,17 @@ func (rv *PostingsList) read(postingsOffset uint64, d *Dictionary) error {
 	var n uint64
 	var read int
 
-	rv.freqOffset, read = binary.Uvarint(d.sb.mem[postingsOffset+n : postingsOffset+binary.MaxVarintLen64])
+	rv.freqOffset, read = binary.Uvarint(d.sb.readMem(postingsOffset+n, postingsOffset+binary.MaxVarintLen64))
 	n += uint64(read)
 
-	rv.locOffset, read = binary.Uvarint(d.sb.mem[postingsOffset+n : postingsOffset+n+binary.MaxVarintLen64])
+	rv.locOffset, read = binary.Uvarint(d.sb.readMem(postingsOffset+n, postingsOffset+n+binary.MaxVarintLen64))
 	n += uint64(read)
 
 	var postingsLen uint64
-	postingsLen, read = binary.Uvarint(d.sb.mem[postingsOffset+n : postingsOffset+n+binary.MaxVarintLen64])
+	postingsLen, read = binary.Uvarint(d.sb.readMem(postingsOffset+n, postingsOffset+n+binary.MaxVarintLen64))
 	n += uint64(read)
 
-	roaringBytes := d.sb.mem[postingsOffset+n : postingsOffset+n+postingsLen]
+	roaringBytes := d.sb.readMem(postingsOffset+n, postingsOffset+n+postingsLen)
 
 	if rv.postings == nil {
 		rv.postings = roaring.NewBitmap()
