@@ -17,6 +17,7 @@ package zap
 import (
 	"io"
 	"io/ioutil"
+	"log"
 	"sync/atomic"
 
 	mmap "github.com/blevesearch/mmap-go"
@@ -89,6 +90,7 @@ func (s *Segment) loadMmap() error {
 	if err == nil {
 		atomic.AddInt64(&mmapCurrentBytes, int64(s.mmSize))
 	} else if MmapIgnoreErrors {
+		log.Printf("[WRN] Ignoring mmap error: %v", err)
 		return nil
 	} else {
 		return err
