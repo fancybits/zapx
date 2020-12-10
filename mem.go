@@ -111,6 +111,7 @@ func (s *Segment) unloadMmap() error {
 	err := s.mm.Unmap()
 	if err == nil {
 		atomic.AddInt64(&mmapCurrentBytes, -int64(s.mmSize))
+		s.mm = nil
 	}
 	return err
 }
