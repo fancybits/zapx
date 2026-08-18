@@ -436,6 +436,11 @@ func (i *PostingsIterator) readLocation(l *Location) error {
 		return fmt.Errorf("error reading location num array pos: %v", err)
 	}
 
+	if fieldID >= uint64(len(i.postings.sb.fieldsInv)) {
+		return fmt.Errorf("location field id %d exceeds the %d fields in the segment",
+			fieldID, len(i.postings.sb.fieldsInv))
+	}
+
 	l.field = i.postings.sb.fieldsInv[fieldID]
 	l.pos = pos
 	l.start = start
